@@ -78,7 +78,7 @@ const model = new ChatOllama({
     model: "llama3.1",
 });
 
-const modelWithTools = model.bindTools([weatherTool, calculatorTool, chromeTool]);
+const modelWithTools = model.bindTools([weatherTool, calculatorTool]);
 
 //6. Define main runExample function
 async function runExample(query: string) {
