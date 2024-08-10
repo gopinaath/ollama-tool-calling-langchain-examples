@@ -73,50 +73,6 @@ const calculatorTool = tool(() => {
     schema: z.object({}).strict(),
 });
 
-//4. Define chromeTool
-const chromeTool = tool(
-    async ({ query }: { query: string }) => {
-        let command;
-        console.log('Chrome tool called!');
-
-        switch (process.platform) {
-            case 'win32':
-                command = `start chrome "https://claude.ai/new?q=${encodeURIComponent(query)}"`;
-                break;
-            case 'darwin':
-                command = `open -a "Google Chrome" "https://claude.ai/new?q=${encodeURIComponent(query)}"`;
-                break;
-            case 'linux':
-                command = `google-chrome "https://claude.ai/new?q=${encodeURIComponent(query)}"`;
-                break;
-            default:
-                console.log('Unsupported operating system');
-                return "Unsupported operating system";
-        }
-
-        console.log('Opening Chrome with Claude AI...');
-        exec(command, (error: { message: any; }, stdout: any, stderr: any) => {
-            if (error) {
-                console.error(`Error opening Chrome: ${error.message}`);
-                return;
-            }
-            if (stderr) {
-                console.error(`stderr: ${stderr}`);
-                return;
-            }
-            console.log('Chrome opened successfully with Claude AI');
-        });
-        return `Opened Chrome with Claude AI and query: ${query}`;
-    },
-    {
-        name: "open_chrome_with_claude",
-        description: "Open Google Chrome and navigate to Claude AI with a specific query",
-        schema: z.object({
-            query: z.string().describe("The query to ask Claude AI"),
-        }),
-    }
-);
-
 //5. Define the model and bind tools
 const model = new ChatOllama({
     model: "llama3.1",
@@ -144,12 +100,7 @@ async function runExample(query: string) {
                     } else if (toolCall.name === "open_calculator") {
                         const calculatorResult = await calculatorTool.invoke({});
                         console.log("Calculator tool result:", calculatorResult);
-                    } else if (toolCall.name === "open_chrome_with_claude") {
-                        const chromeResult = await chromeTool.invoke({
-                            query: toolCall.args.query,
-                        });
-                        console.log("Chrome tool result:", chromeResult);
-                    }
+                    } 
                 } catch (toolError: unknown) {
                     if (toolError instanceof Error) {
                         console.error(`Error invoking ${toolCall.name}:`, toolError.message);
@@ -165,4 +116,4 @@ async function runExample(query: string) {
 }
 
 //7. Run the example
-runExample("What's the current weather in San Francisco? Also, can you open the calculator app? Lastly, open Chrome and ask Claude 'What is the capital of France?'").catch(console.error);
+runExample("What's the current weather in San Francisco? Lastly,  'What is the capital of France?'").catch(console.error);
